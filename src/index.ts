@@ -5,15 +5,20 @@ import { getWorkerServer } from "./server";
 import { createServer, Server } from "http";
 import net from "node:net";
 import "dotenv/config";
+import { createServerDB } from "./db/createDB";
 
 const PORT = Number(process.env.PORT) || 4000;
+const DB_PORT = Number(process.env.DB_PORT) || 8000;
+
 const isCluster = isModeCluster();
+export const db = new net.Socket();
 
 async function startApp() {
   if (isCluster) {
     if (cluster.isPrimary) {
       // Primary process
 
+      await createServerDB(DB_PORT);
       const numCPUs = os.cpus().length;
 
       const workersPorts: Array<number> = [];
@@ -34,7 +39,9 @@ async function startApp() {
       function handlerPrimarySocket(socket: net.Socket) {
         socket.on("data", (data) => {
           const workersSocket = new net.Socket();
-          workersSocket.connect(getNextWorkerPort(), "127.0.0.1", () => {
+          const nextPort = getNextWorkerPort();
+
+          workersSocket.connect(nextPort, "127.0.0.1", () => {
             workersSocket.write(data);
             workersSocket.emit("close");
           });
@@ -55,20 +62,32 @@ async function startApp() {
     } else {
       // Worker's process
 
-      console.log(process.pid);
       const workerPort = process.env.workerPort;
       if (workerPort) {
         const server = await getWorkerServer(Number(workerPort));
         server.listen(workerPort, () =>
           console.log(`Worker server listen on PORT ${workerPort}`)
         );
+
+        db.connect(DB_PORT, "127.0.0.1", () =>
+          console.log(
+            `Worker port ${workerPort} pid ${process.pid} is connected to database`
+          )
+        );
       }
     }
   } else {
     // Single worker process
 
+    await createServerDB(DB_PORT);
     const server = await getWorkerServer(PORT);
     server.listen(PORT, () => console.log(`Server listen on PORT ${PORT}`));
+
+    db.connect(DB_PORT, "127.0.0.1", () =>
+      console.log(
+        `Server port ${PORT} pid ${process.pid} is connected to database`
+      )
+    );
   }
 }
 
