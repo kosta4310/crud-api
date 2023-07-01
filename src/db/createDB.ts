@@ -20,6 +20,7 @@ export async function createServerDB(port: Number) {
       socket.on("data", (data) => {
         try {
           const responseFromDatabase = getResponse(data);
+
           socket.write(JSON.stringify(responseFromDatabase));
         } catch (error) {
           socket.write(
@@ -53,7 +54,6 @@ function getResponse(data: Buffer) {
   }
 
   function findOne(id: string): ResponseServer {
-    console.log(id);
     if (validate(id)) {
       const user = users.find((user) => user.id === id);
       if (user) {

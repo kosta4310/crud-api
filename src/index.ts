@@ -42,6 +42,8 @@ async function startApp() {
           const nextPort = getNextWorkerPort();
 
           workersSocket.connect(nextPort, "127.0.0.1", () => {
+            console.log(`Worker port ${nextPort} accepted the request`);
+
             workersSocket.write(data);
             workersSocket.emit("close");
           });
