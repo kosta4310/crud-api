@@ -72,7 +72,8 @@ export function handlerReqRes(
   });
 
   req.on("end", () => {
-    const body = JSON.parse(Buffer.concat(arrayChunks).toString());
+    const body =
+      arrayChunks.length && JSON.parse(Buffer.concat(arrayChunks).toString());
     parseRequest(body);
   });
 

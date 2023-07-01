@@ -18,5 +18,5 @@ export function updateUser(user: Omit<User, "id">, id: string) {
 }
 
 export function removeUser(id: string) {
-  db.write(JSON.stringify({ method: "remove", payload: { id } }));
+  db.write(JSON.stringify({ method: "remove", payload: id }));
 }
