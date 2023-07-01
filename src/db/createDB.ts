@@ -1,8 +1,9 @@
 import { createServer, Socket } from "node:net";
 // import { Error404 } from "src/errors/myError";
-import { User } from "src/utils/types";
+import { ResponseServer, User } from "src/utils/types";
 import { v4 as uuidv4, validate } from "uuid";
 import { httpStatusCodes as code } from "../utils/httpStatusCodes";
+import { isValidInputUserData } from "../utils/isValidInputUserData";
 
 const users: Array<User> = [];
 
@@ -17,10 +18,17 @@ export async function createServerDB(port: Number) {
 
     function handlerDatabaseSocket(socket: Socket) {
       socket.on("data", (data) => {
-        const responseFromDatabase = getResponse(data);
-        // users.push({ name: count++ + "" });
-        // console.log(data.toString());
-        socket.write(`${JSON.stringify(responseFromDatabase)}`);
+        try {
+          const responseFromDatabase = getResponse(data);
+          socket.write(JSON.stringify(responseFromDatabase));
+        } catch (error) {
+          socket.write(
+            JSON.stringify({
+              statusCode: 500,
+              message: "Internal server error",
+            })
+          );
+        }
       });
     }
   });
@@ -38,25 +46,35 @@ function getResponse(data: Buffer) {
     insert,
   };
 
-  return methods[method](payload);
-
-  function find(args: any) {
-    return users;
+  function find(args: any): ResponseServer {
+    return { statusCode: 200, message: users };
   }
 
-  function findOne(id: string) {
+  function findOne(id: string): ResponseServer {
     if (validate(id)) {
-      return users.find((user) => user.id === id);
+      const user = users.find((user) => user.id === id);
+      if (user) {
+        return { statusCode: 200, message: user };
+      }
+      return { statusCode: 404, message: "The user doesnt exist" };
     }
-    throw new Error404("User doesn't exist");
+    return { statusCode: 400, message: "Userid is not uuid" };
   }
 
-  function insert(user: Omit<User, "id">) {
+  function insert(user: Omit<User, "id">): ResponseServer {
+    if (!isValidInputUserData(user)) {
+      return {
+        statusCode: 400,
+        message: "Request body does not contain required fields",
+      };
+    }
     const newId = uuidv4();
-    const savedUser = { ...user, id: newId };
+    const savedUser: User = Object.assign(user, { id: newId });
     users.push(savedUser);
-    return savedUser;
+    return { statusCode: 201, message: savedUser };
   }
+
+  return methods[method](payload);
 }
 
 export class MyError extends Error {

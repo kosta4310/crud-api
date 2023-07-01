@@ -4,3 +4,8 @@ export type User = {
   age: number;
   hobbies: Array<string> | [];
 };
+
+export type ResponseServer = {
+  statusCode: number;
+  message: string | User | Array<User>;
+};
