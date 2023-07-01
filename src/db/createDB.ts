@@ -44,6 +44,7 @@ function getResponse(data: Buffer) {
     find,
     findOne,
     insert,
+    update,
   };
 
   function find(args: any): ResponseServer {
@@ -51,6 +52,7 @@ function getResponse(data: Buffer) {
   }
 
   function findOne(id: string): ResponseServer {
+    console.log(id);
     if (validate(id)) {
       const user = users.find((user) => user.id === id);
       if (user) {
@@ -72,6 +74,10 @@ function getResponse(data: Buffer) {
     const savedUser: User = Object.assign(user, { id: newId });
     users.push(savedUser);
     return { statusCode: 201, message: savedUser };
+  }
+
+  function update(user: User) {
+    return { statusCode: 200, message: user };
   }
 
   return methods[method](payload);

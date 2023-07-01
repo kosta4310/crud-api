@@ -1,7 +1,7 @@
 import { db } from "../";
 import { User } from "src/utils/types";
 import { IncomingMessage, ServerResponse } from "http";
-import { createUser, getAllUsers } from "./controller";
+import { createUser, getAllUsers, getUserById, updateUser } from "./controller";
 
 export function handlerReqRes(
   req: IncomingMessage,
@@ -12,26 +12,48 @@ export function handlerReqRes(
   const arrayChunks: Array<Buffer> = [];
 
   function parseRequest(body: User) {
-    switch (req.url) {
+    const { url, method } = req;
+    if (url) {
+    }
+
+    switch (url) {
       case "/api/users":
-        switch (req.method) {
+        switch (method) {
           case "GET":
-            try {
-              getAllUsers();
-            } catch (error) {
-              console.log(error);
-            }
+            getAllUsers();
             break;
           case "POST":
             createUser(body);
             break;
 
           default:
+            res.statusCode = 404;
+            res.end("Page not found");
             break;
         }
         break;
+      case String(url?.match(/^\/api\/users\/[a-z0-9-]+/gm)):
+        const startIndexOfId = url.lastIndexOf("/");
+        const id = url.substring(startIndexOfId + 1);
+        switch (method) {
+          case "GET":
+            getUserById(id);
+            break;
+          case "PUT":
+            updateUser(body, id);
+            break;
+
+          default:
+            res.statusCode = 404;
+            res.end("Page not found");
+            break;
+        }
+
+        break;
 
       default:
+        res.statusCode = 404;
+        res.end("Page not found");
         break;
     }
   }
