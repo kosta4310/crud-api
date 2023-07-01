@@ -1,7 +1,13 @@
 import { db } from "../";
 import { User } from "src/utils/types";
 import { IncomingMessage, ServerResponse } from "http";
-import { createUser, getAllUsers, getUserById, updateUser } from "./controller";
+import {
+  createUser,
+  getAllUsers,
+  getUserById,
+  removeUser,
+  updateUser,
+} from "./controller";
 
 export function handlerReqRes(
   req: IncomingMessage,
@@ -41,6 +47,9 @@ export function handlerReqRes(
             break;
           case "PUT":
             updateUser(body, id);
+            break;
+          case "DELETE":
+            removeUser(id);
             break;
 
           default:

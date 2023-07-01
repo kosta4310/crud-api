@@ -5,7 +5,7 @@ import { v4 as uuidv4, validate } from "uuid";
 import { httpStatusCodes as code } from "../utils/httpStatusCodes";
 import { isValidInputUserData } from "../utils/isValidInputUserData";
 
-const users: Array<User> = [];
+let users: Array<User> = [];
 
 export async function createServerDB(port: Number) {
   return new Promise((resolve) => {
@@ -45,6 +45,7 @@ function getResponse(data: Buffer) {
     findOne,
     insert,
     update,
+    remove,
   };
 
   function find(args: any): ResponseServer {
@@ -77,28 +78,38 @@ function getResponse(data: Buffer) {
   }
 
   function update(user: User) {
-    return { statusCode: 200, message: user };
+    const { id } = user;
+    if (!isValidInputUserData(user)) {
+      return {
+        statusCode: 400,
+        message: "Request body does not contain required fields",
+      };
+    }
+
+    if (validate(id)) {
+      const currentUser = users.find((user) => user.id === id);
+      if (currentUser) {
+        users = users.filter((user) => user.id !== id);
+        users.push(user);
+        return { statusCode: 200, message: user };
+      }
+      return { statusCode: 404, message: "The user doesnt exist" };
+    }
+    return { statusCode: 400, message: "Userid is not uuid" };
+  }
+
+  function remove(id: string) {
+    if (validate(id)) {
+      const currentUser = users.find((user) => user.id === id);
+      if (currentUser) {
+        users = users.filter((user) => user.id !== id);
+
+        return { statusCode: 204, message: "" };
+      }
+      return { statusCode: 404, message: "The user doesnt exist" };
+    }
+    return { statusCode: 400, message: "Userid is not uuid" };
   }
 
   return methods[method](payload);
-}
-
-export class MyError extends Error {
-  statusCode: number;
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-export class Error400 extends MyError {
-  constructor(message: string) {
-    super(message, code.BAD_REQUEST);
-  }
-}
-
-export class Error404 extends MyError {
-  constructor(message: string) {
-    super(message, code.NOT_FOUND);
-  }
 }
