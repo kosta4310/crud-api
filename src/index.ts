@@ -2,7 +2,6 @@ import cluster from "cluster";
 import os from "node:os";
 import { isModeCluster } from "./utils/isModeCluster";
 import { getWorkerServer } from "./server";
-import { createServer, Server } from "http";
 import net from "node:net";
 import "dotenv/config";
 import { createServerDB } from "./db/createDB";
@@ -66,7 +65,7 @@ async function startApp() {
 
       const workerPort = process.env.workerPort;
       if (workerPort) {
-        const server = await getWorkerServer(Number(workerPort));
+        const server = await getWorkerServer();
         server.listen(workerPort, () =>
           console.log(`Worker server listen on PORT ${workerPort}`)
         );
@@ -82,7 +81,7 @@ async function startApp() {
     // Single worker process
 
     await createServerDB(DB_PORT);
-    const server = await getWorkerServer(PORT);
+    const server = await getWorkerServer();
     server.listen(PORT, () => console.log(`Server listen on PORT ${PORT}`));
 
     db.connect(DB_PORT, "127.0.0.1", () =>

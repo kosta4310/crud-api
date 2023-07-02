@@ -1,8 +1,6 @@
 import { createServer, Socket } from "node:net";
-// import { Error404 } from "src/errors/myError";
 import { ResponseServer, User } from "src/utils/types";
 import { v4 as uuidv4, validate } from "uuid";
-import { httpStatusCodes as code } from "../utils/httpStatusCodes";
 import { isValidInputUserData } from "../utils/isValidInputUserData";
 
 let users: Array<User> = [];
@@ -36,9 +34,10 @@ export async function createServerDB(port: Number) {
 }
 
 function getResponse(data: Buffer) {
-  const req: { method: "find" | "findOne"; payload: any } = JSON.parse(
-    data.toString()
-  );
+  const req: {
+    method: "find" | "findOne" | "insert" | "update" | "remove";
+    payload: any;
+  } = JSON.parse(data.toString());
   const { method, payload } = req;
 
   const methods = {
@@ -49,7 +48,7 @@ function getResponse(data: Buffer) {
     remove,
   };
 
-  function find(args: any): ResponseServer {
+  function find(_args: any): ResponseServer {
     return { statusCode: 200, message: users };
   }
 

@@ -19,8 +19,6 @@ export function handlerReqRes(
 
   function parseRequest(body: User) {
     const { url, method } = req;
-    if (url) {
-    }
 
     switch (url) {
       case "/api/users":
