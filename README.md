@@ -53,14 +53,6 @@ npm run start:prod
 
 ```
 
-Run tests scenarios for API
-
-```
-
-npm test
-
-```
-
 Run cluster mode with default load balancer and one in-memory-database for all workers
 
 ```

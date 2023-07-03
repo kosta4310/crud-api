@@ -5,8 +5,7 @@
   "scripts": {
     "start:dev": "nodemon",
     "start:prod": "tsc && node ./dist/index.js",
-    "start:multi": "tsc && node ./dist/index.js --cluster",
-    "test": "jest --silent --verbose --config ./test/jest-e2e.json"
+    "start:multi": "tsc && node ./dist/index.js --cluster"
   },
   "repository": {
     "type": "git",
