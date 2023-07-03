@@ -1,0 +1,35 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon",
+    "start:prod": "tsc && node ./dist/index.js",
+    "start:multi": "tsc && node ./dist/index.js --cluster"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kosta4310/crud-api.git"
+  },
+  "author": "Kostiantyn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kosta4310/crud-api/issues"
+  },
+  "homepage": "https://github.com/kosta4310/crud-api#readme",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.43.0",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3",
+    "uuid": "^9.0.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.2"
+  }
+}
