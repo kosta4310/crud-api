@@ -9,9 +9,9 @@ Task [https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/c
 Clone and install repository and then take branch develop
 
 ```
-git clone https://github.com/kosta4310/node-nodejs-basics-new.git
+git clone https://github.com/kosta4310/crud-api.git
 
-cd node-nodejs-basics-new
+cd crud-api
 
 git checkout develop
 
