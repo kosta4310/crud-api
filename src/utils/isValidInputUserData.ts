@@ -6,7 +6,7 @@ export function isValidInputUserData(user: Omit<User, "id">): Boolean {
     return false;
   }
 
-  if (!age || typeof age !== "number") {
+  if (!age || typeof age !== "number" || age < 0) {
     return false;
   }
 
